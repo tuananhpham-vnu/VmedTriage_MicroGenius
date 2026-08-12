@@ -1,9 +1,8 @@
-name: Sync upstream dev
+name: Sync origin dev
 
 on:
   schedule:
     - cron: "*/5 * * * *"
-
   workflow_dispatch:
 
 permissions:
@@ -20,21 +19,16 @@ jobs:
           ref: dev
           fetch-depth: 0
 
-      - name: Add upstream and fetch dev
+      - name: Configure origin
         run: |
-          git remote add upstream https://github.com/AI20K-Build-Phase-Cohort-3/P-141.git
-          git fetch upstream dev
+          git remote set-url origin https://github.com/AI20K-Build-Phase-Cohort-3/P-141.git
+          git remote set-url --push origin https://github.com/tuananhpham-vnu/VmedTriage_MicroGenius.git
+          git remote -v
 
-      - name: Sync upstream dev to personal dev
+      - name: Sync dev
         run: |
-          UPSTREAM=$(git rev-parse upstream/dev)
-          CURRENT=$(git rev-parse origin/dev)
-
-          if [ "$UPSTREAM" != "$CURRENT" ]; then
-            echo "New commit detected"
-            git checkout dev
-            git reset --hard upstream/dev
-            git push origin dev --force
-          else
-            echo "Already up to date"
-          fi
+          git fetch origin dev
+          git checkout dev
+          git reset --hard
+          git clean -fd
+          git push origin dev --force
