@@ -1,0 +1,40 @@
+name: Sync upstream dev
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout personal repo
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+
+      - name: Add upstream and fetch dev
+        run: |
+          git remote add upstream https://github.com/AI20K-Build-Phase-Cohort-3/P-141.git
+          git fetch upstream dev
+
+      - name: Sync upstream dev to personal dev
+        run: |
+          UPSTREAM=$(git rev-parse upstream/dev)
+          CURRENT=$(git rev-parse origin/dev)
+
+          if [ "$UPSTREAM" != "$CURRENT" ]; then
+            echo "New commit detected"
+            git checkout dev
+            git reset --hard upstream/dev
+            git push origin dev --force
+          else
+            echo "Already up to date"
+          fi
