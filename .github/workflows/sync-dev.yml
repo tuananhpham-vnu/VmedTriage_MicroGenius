@@ -1,28 +1,43 @@
-steps:
-  - name: Checkout personal repo
-    uses: actions/checkout@v4
-    with:
-      ref: dev
-      fetch-depth: 0
+name: Sync origin dev
 
-  - name: Login GitHub as me
-    env:
-      GH_TOKEN: ${{ secrets.GH_PAT }}
-    run: |
-      echo "$GH_TOKEN" | gh auth login --with-token
-      gh auth setup-git
-      gh auth status
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
 
-  - name: Configure origin
-    run: |
-      git remote set-url origin https://github.com/AI20K-Build-Phase-Cohort-3/P-141.git
-      git remote set-url --push origin https://github.com/tuananhpham-vnu/VmedTriage_MicroGenius.git
-      git remote -v
+permissions:
+  contents: write
 
-  - name: Sync dev
-    run: |
-      git fetch origin dev
-      git checkout dev
-      git reset --hard origin/dev
-      git clean -fd
-      git push origin dev --force
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout personal repo
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Login GitHub as me
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          echo "$GH_TOKEN" | gh auth login --with-token
+          gh auth setup-git
+          gh auth status
+
+      - name: Configure origin
+        run: |
+          git remote set-url origin https://github.com/AI20K-Build-Phase-Cohort-3/P-141.git
+          git remote set-url --push origin https://github.com/tuananhpham-vnu/VmedTriage_MicroGenius.git
+          git remote -v
+
+      - name: Sync dev
+        run: |
+          git fetch origin dev
+          git checkout dev
+          git reset --hard origin/dev
+          git clean -fd
+          git push origin dev --force
