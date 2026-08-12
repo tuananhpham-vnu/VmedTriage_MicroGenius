@@ -1,6 +1,10 @@
 name: Sync origin dev
 
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
@@ -11,6 +15,8 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT }}
 
     steps:
       - name: Checkout personal repo
@@ -21,8 +27,6 @@ jobs:
           persist-credentials: false
 
       - name: Login GitHub as me
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           gh auth status
           gh auth setup-git
