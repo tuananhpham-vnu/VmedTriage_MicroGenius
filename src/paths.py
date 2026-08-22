@@ -21,3 +21,15 @@ LOGS_DIR = PROJECT_ROOT / "logs"
 """Log phiên hỏi-đáp. Đã nằm trong .gitignore vì chứa nguyên văn hội thoại (PHI)."""
 
 DATA_DIR = PROJECT_ROOT / "data"
+
+RUNS_DIR = PROJECT_ROOT / "runs"
+"""Artifact model đã train (`logreg_full/`, `bert_full/`, `fusion_full/`). Trong .gitignore vì một
+thư mục PhoBERT đã hơn 500 MB."""
+
+GRAPH_CACHE_DIR = DATA_DIR / "graphs"
+"""Patient Graph JSONL do `src/graph_triage/extract_graphs.py` sinh ra."""
+
+SOURCE_INDEX_DIR = DATA_DIR / "source_index"
+"""Corpus y văn của `src/source_support/` (part 3): `corpus.jsonl` + `embeddings.npy`, hai file song
+song cùng thứ tự dòng. Sinh ra bằng `scripts/build_source_corpus.py` và tự bồi đắp mỗi lần một claim
+không tra được trong index. Trong .gitignore vì nó là dữ liệu tải về, không phải mã nguồn."""
