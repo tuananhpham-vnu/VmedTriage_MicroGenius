@@ -1,28 +1,28 @@
-services:
-  - type: web
-    name: vmedtriage
-    runtime: python
-    plan: free
-    region: singapore
-    branch: dev
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn src.main:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /health
-    autoDeployTrigger: commit
-    envVars:
-      - key: APP_ENV
-        value: production
-      - key: LLM_PROVIDER
-        value: auto
-      - key: LLM_PROVIDER_ORDER
-        value: deepseek,gemini
-      - key: OPENAI_MODEL_NAME
-        value: gpt-4o-mini
-      - key: DEEPSEEK_MODEL_NAME
-        value: deepseek-chat
-      - key: GEMINI_MODEL_NAME
-        value: gemini-3.5-flash-lite
-      - key: SUPPORTED_MODEL_NAME
-        value: Qwen/Qwen3-8B
-      - key: LLM_TEMPERATURE
-        value: "0.0"
+steps:
+  - name: Checkout personal repo
+    uses: actions/checkout@v4
+    with:
+      ref: dev
+      fetch-depth: 0
+
+  - name: Login GitHub as me
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT }}
+    run: |
+      echo "$GH_TOKEN" | gh auth login --with-token
+      gh auth setup-git
+      gh auth status
+
+  - name: Configure origin
+    run: |
+      git remote set-url origin https://github.com/AI20K-Build-Phase-Cohort-3/P-141.git
+      git remote set-url --push origin https://github.com/tuananhpham-vnu/VmedTriage_MicroGenius.git
+      git remote -v
+
+  - name: Sync dev
+    run: |
+      git fetch origin dev
+      git checkout dev
+      git reset --hard origin/dev
+      git clean -fd
+      git push origin dev --force
